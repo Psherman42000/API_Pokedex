@@ -47,13 +47,14 @@ public class ConexaoBanco {
 		return this.conn;
 	}
         
-        public void addPokemon(String pokemon){
+        public void addPokemon(String num, String pokemon){//salva pokemon 
         try {       
             
-            sql="INSERT INTO pokedex (pokemon) VALUES ('?');";
+            sql="INSERT INTO pokedex (num,pokemon) VALUES ('?','?');";
             
             PreparedStatement ps = this.conn.prepareStatement(sql);
             ps.setString(1, pokemon);
+            ps.setString(2, num);
             ps.executeUpdate();
             ps.close();
         }
@@ -63,10 +64,11 @@ public class ConexaoBanco {
         }
 	}
 
-    public String GetPokemon(String num) {
+    public String GetPokemon(String num) {//busca pokemon
         PreparedStatement ps;
+        pokemon = "";
             try {
-                ps = this.conn.prepareStatement("SELECT pokemon FROM pokedex WHERE idpessoa = '?' ;");
+                ps = this.conn.prepareStatement("SELECT pokemon FROM pokedex WHERE num = '?' ;");
                 ps.setString(1,num);
                 ResultSet rs = ps.executeQuery();
                 rs.next();
@@ -76,5 +78,48 @@ public class ConexaoBanco {
             }
         
         return pokemon;
+    }
+
+    public void deletePokemon(String num) {//apaga pokemon
+        PreparedStatement ps;
+            try {
+                ps = this.conn.prepareStatement("DELETE FROM pokedex WHERE num = '?';");
+                ps.setString(1,num);
+                ps.executeQuery();
+            } catch (SQLException ex) {
+                Logger.getLogger(ConexaoBanco.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }
+
+    public String GetAllPokemon() {//pega todos pokemons
+        PreparedStatement ps;
+        pokemon = "";
+        int i = 1;
+            try {
+                ps = this.conn.prepareStatement("SELECT pokemon FROM pokedex;");
+                ResultSet rs = ps.executeQuery();
+                while(rs.next()){
+                    pokemon = pokemon+rs.getString(i);
+                    i++;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(ConexaoBanco.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
+        return pokemon;
+    }
+
+    public void updatePokemon(String num, String strinPoke) {//atualiza pokemon
+         sql="UPDATE pokedex SET pokemon = '?' WHERE num = '?';";
+         PreparedStatement ps;
+            try {
+                ps = this.conn.prepareStatement(sql);
+                ps.setString(1, strinPoke);
+                ps.setString(2, num);
+                ps.executeUpdate();
+                ps.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(ConexaoBanco.class.getName()).log(Level.SEVERE, null, ex);
+            }
     }
 }
