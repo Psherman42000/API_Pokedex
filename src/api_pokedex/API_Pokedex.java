@@ -16,6 +16,7 @@ public class API_Pokedex {
     private JSONParser parser;
     private Pokemon poke;
     private ConexaoBanco conn;
+    private String strinPoke;
     
     public void Post(String num, String name, String type, String next_evolution, String prev_evolution){
         pokeJson = new JSONObject();
@@ -25,10 +26,22 @@ public class API_Pokedex {
         pokeJson.put("next_evolution",next_evolution);
         pokeJson.put("prev_evolution",prev_evolution);
         
-        conn.addPokemon(pokeJson.toJSONString());
+        conn.addPokemon(pokeJson.toJSONString());// salvando pokemon no banco de dados
     }
 
+    public JSONObject Get(String num){
+        pokeJson = new JSONObject();
+        strinPoke = conn.GetPokemon(num); //buscando o pokemon no banco de dados
+        try {
+            pokeJson = (JSONObject) parser.parse(strinPoke);//transformando a string em JSON
+        } catch (ParseException ex) {
+            Logger.getLogger(API_Pokedex.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return pokeJson;
+    }    
+    
     public API_Pokedex() {
         conn = new ConexaoBanco();
+        JSONParser parser = new JSONParser();
     }
 }
